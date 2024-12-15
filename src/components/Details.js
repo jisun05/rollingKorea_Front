@@ -57,22 +57,34 @@ function Details() {
                 ))}
             </Form.Select>
             <Tabs defaultActiveKey="DAY1" id="uncontrolled-tab-example" className="mb-3">
-                <Tab eventKey="DAY1" title="DAY1">
-                    {places.length > 0 ? (
-                        places.map((place) => (
-                            <Place key={place.id} place={place} />
-                        ))
-                    ) : (
-                        <p>장소 정보를 불러오는 중입니다...</p>
-                    )}
-                </Tab>
-                <Tab eventKey="DAY2" title="DAY2">
-                    Tab content for DAY2
-                </Tab>
-                <Tab eventKey="DAY3" title="DAY3">
-                    Tab content for DAY3
-                </Tab>
-            </Tabs>
+        <Tab eventKey="DAY1" title="DAY1">
+        {places.filter(place => place.whichDay === 'DAY1').length > 0 ? (
+            places.filter(place => place.whichDay === 'DAY1').map((place) => (
+                <Place key={place.id} place={place} />
+            ))
+        ) : (
+            <p>DAY1 Loading place information...</p>
+        )}
+    </Tab>
+    <Tab eventKey="DAY2" title="DAY2">
+        {places.filter(place => place.whichDay === 'DAY2').length > 0 ? (
+            places.filter(place => place.whichDay === 'DAY2').map((place) => (
+                <Place key={place.id} place={place} />
+            ))
+        ) : (
+            <p>DAY2 Loading place information...</p>
+        )}
+    </Tab>
+    <Tab eventKey="DAY3" title="DAY3">
+        {places.filter(place => place.whichDay === 'DAY3').length > 0 ? (
+            places.filter(place => place.whichDay === 'DAY3').map((place) => (
+                <Place key={place.id} place={place} />
+            ))
+        ) : (
+            <p>DAY3 Loading place information...</p>
+        )}
+    </Tab>
+</Tabs>
         </div>
     );
 }
