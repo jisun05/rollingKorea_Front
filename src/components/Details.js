@@ -6,7 +6,6 @@ import Tabs from 'react-bootstrap/Tabs';
 import Place from './Place';
 import apiClient from '../utils/Log';
 import Maps from '../modules/Maps';
-import ErrorBoundary from '../utils/ErrorBoundary';
 
 function Details() {
     const { region } = useParams();
@@ -35,7 +34,7 @@ function Details() {
     const fetchPlaces = async (region) => {
         try {
             const response = await apiClient.get(`http://localhost:8080/api/place?region=${region}`);
-            setPlaces(response.data); // 가져온 데이터 설정
+            setPlaces(response.data); 
             console.log(response.data); 
         } catch (error) {
             console.error("Error fetching places:", error.response ? error.response.data : error.message);
@@ -50,7 +49,7 @@ function Details() {
 
     return ( 
         <div style={{ display: 'flex', marginLeft: '30px', marginTop: '30px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginRight: '4rem' }}>
                 <p style={{ marginRight: '10px', fontSize: '20px', marginBottom: '10px' }}>Your Choice</p>
                 <Form.Select size="lg" value={selectedRegion} onChange={handleSelectChange} style={{ width: '31rem', marginBottom: '20px' }}>
                     {options.map((option) => (
@@ -88,20 +87,9 @@ function Details() {
                         )}
                     </Tab>
                 </Tabs>
-            </div>
-            <div style={{ 
-                width: '60vw',      
-                height: '90vh',     
-                border: '2px solid black', 
-                backgroundColor: 'white', 
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.5)', 
-                fontSize: '20px',     
-                marginLeft: '5vw'    //  between Tabs and div 
-            }}>
-              {/* <Maps/>          */}
+            </div>           
+            <div style={{ flexGrow: 1 }}>
+                <Maps />                   
             </div>
         </div>
     );

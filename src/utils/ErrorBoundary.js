@@ -18,13 +18,14 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
-      // 커스텀 에러 메시지 또는 UI를 반환
+ 
       return <h1>Error! Please try again.</h1>;
     }
 
     if (React.isValidElement(this.props.children)) {
         return this.props.children; 
     } else {
+        console.log(this.props.children);
         return <h1>not valid components</h1>;
     }
   }
