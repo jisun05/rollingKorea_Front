@@ -24,7 +24,7 @@ function App() {
     <Container>
       <Navbar.Brand href="/">Rolling Korea</Navbar.Brand>
       <Nav className="me-auto">
-        <Nav.Link href="/">Home</Nav.Link>
+        <Nav.Link href="/">Home</Nav.Link> 
         <Nav.Link href="/login"><LoginModal /></Nav.Link>           
       </Nav>
     </Container>
@@ -34,10 +34,10 @@ function App() {
 
 <div style={{ 
     display: 'flex', 
-    justifyContent: 'center', // 수평 가운데 정렬
-    alignItems: 'center', // 수직 가운데 정렬
-    height: '100vh', // 전체 화면 높이
-    margin: 70 // 기본 마진 제거
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    height: '100vh', 
+    margin: 70 
     
 }}>
 <div style={{ display: 'flex', flexDirection: 'row', gap: '250px', justifyContent: 'center' }}>

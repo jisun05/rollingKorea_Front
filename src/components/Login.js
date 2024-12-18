@@ -45,23 +45,29 @@ const LoginModal = () => {
         });
     };
 
+    // OAuth2 로그인 URL (Spring Boot에서 설정한 경로)
+    const googleLoginUrl = '/oauth2/authorization/google';
+
+    // 회원가입 URL (예시)
+    const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
+
     return (
         <>
             <Nav.Link onClick={handleShow}>LogIn</Nav.Link>
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>로그인</Modal.Title>
+                    <Modal.Title>Login</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
                     {successMessage && <div className="alert alert-success">{successMessage}</div>}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formBasicEmail">
-                            <Form.Label>이메일</Form.Label>
+                            <Form.Label>Email</Form.Label>
                             <Form.Control
                                 type="email"
-                                placeholder="이메일 입력"
+                                placeholder="write your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -69,18 +75,34 @@ const LoginModal = () => {
                         </Form.Group>
 
                         <Form.Group controlId="formBasicPassword">
-                            <Form.Label>비밀번호</Form.Label>
+                            <Form.Label>Password</Form.Label>
                             <Form.Control
                                 type="password"
-                                placeholder="비밀번호 입력"
+                                placeholder="write your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit">
-                            로그인
-                        </Button>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '2rem' }}>
+                            <Button variant="primary" type="submit" style={{ marginRight: '1rem' }}>
+                                Login
+                            </Button>
+                            <Button 
+                                variant="primary" 
+                                onClick={() => window.location.href = googleLoginUrl}
+                                style={{ marginRight: '1rem' }}
+                            >
+                                Google Login
+                            </Button>
+                            <Button 
+                                variant="primary" 
+                                onClick={() => window.location.href = signUpUrl}
+                            >
+                                Signup
+                            </Button>
+                        </div>
                     </Form>
                 </Modal.Body>
             </Modal>

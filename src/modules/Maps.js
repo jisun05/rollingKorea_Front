@@ -15,7 +15,8 @@ const Maps = ({ position, placeName  }) => {
         >
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+                url='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+
             />
             <Marker position={position}>
                 <Popup>        
