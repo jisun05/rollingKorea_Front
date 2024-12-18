@@ -16,15 +16,15 @@ function Details() {
     const navigate = useNavigate();
 
     const options = [
-        'Gyeonggi-do',
-        'Chungcheongnam-do',
-        'Chungcheongbuk-do',
-        'Jeollabuk-do',
-        'Jeollanam-do',
-        'Gyeongsangnam-do',
-        'Gyeongsangbuk-do',
-        'Gangwon-do',
-        'Jeju'
+        'Gyeonggi Area',
+        'Chungnam Area',
+        'Chungbuk Area',
+        'Jeonbuk Area',
+        'Jeonnam Area',
+        'Gyeongnam Area',
+        'Gyeongbuk Area',
+        'Gangwon Area',
+        'Jeju Area'
     ];
 
     useEffect(() => {

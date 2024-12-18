@@ -42,7 +42,7 @@ function App() {
 }}>
 <div style={{ display: 'flex', flexDirection: 'row', gap: '250px', justifyContent: 'center' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', width : "270px", marginTop: '150px', marginLeft: '200px' }}>
-                    {['Gyeonggi-do', 'Chungcheongnam-do', 'Chungcheongbuk-do', 'Jeollabuk-do', 'Jeollanam-do', 'Gyeongsangnam-do', 'Gyeongsangbuk-do', 'Gangwon-do', 'Jeju'].map((region) => (
+                    {['Gyeonggi Area', 'Chungnam Area', 'Chungbuk Area', 'Jeonbuk Area', 'Jeonnam Area', 'Gyeongnam Area', 'Gyeongbuk Area', 'Gangwon Area', 'Jeju Area'].map((region) => (
                         <Link to={`/details/${region}`} key={region} style={{ textDecoration: 'none' }}>
                             <Button
                                 variant="primary"
