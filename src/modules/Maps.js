@@ -1,13 +1,11 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
-const Maps = () => {
-    const position = [37.6301561, 126.9002100]; 
-
+const Maps = ({ position, placeName  }) => {
     return (
         <MapContainer 
             center={position} 
-            zoom={13} 
+            zoom={10} 
             style={{ 
                 border: '2px solid black', 
                 height: '80vh', 
@@ -20,10 +18,12 @@ const Maps = () => {
                 url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
             />
             <Marker position={position}>
-                <Popup>A pretty CSS3 popup. <br /> Easily customizable.</Popup>
+                <Popup>        
+                    {placeName}
+                </Popup>
             </Marker>
         </MapContainer>
     );
 };
 
-export default Maps;
+export default Maps; 

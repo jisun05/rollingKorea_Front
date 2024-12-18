@@ -10,7 +10,9 @@ import Maps from '../modules/Maps';
 function Details() {
     const { region } = useParams();
     const [selectedRegion, setSelectedRegion] = useState(region);
-    const [places, setPlaces] = useState([]); // 장소 데이터를 저장할 상태
+    const [places, setPlaces] = useState([]); 
+    const [mapPosition, setMapPosition] = useState([37.62591, 126.8981]); 
+    const [placeName, setPlaceName] = useState('');
     const navigate = useNavigate();
 
     const options = [
@@ -27,10 +29,10 @@ function Details() {
 
     useEffect(() => {
         setSelectedRegion(region);
-        fetchPlaces(region); // API 호출
+        fetchPlaces(region); 
     }, [region]);
 
-    // API 호출 함수
+   
     const fetchPlaces = async (region) => {
         try {
             const response = await apiClient.get(`http://localhost:8080/api/place?region=${region}`);
@@ -47,6 +49,11 @@ function Details() {
         navigate(`/details/${newRegion}`);
     };
 
+    const handlePlaceClick = (latitude, longitude , name) => {
+        setMapPosition([latitude, longitude]); // move to click location
+        setPlaceName(name);
+    };
+
     return ( 
         <div style={{ display: 'flex', marginLeft: '30px', marginTop: '30px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginRight: '4rem' }}>
@@ -59,37 +66,25 @@ function Details() {
                     ))}
                 </Form.Select>
                 <Tabs defaultActiveKey="DAY1" id="uncontrolled-tab-example" className="mb-3">
-                    <Tab eventKey="DAY1" title="DAY1">
-                        {places.filter(place => place.whichDay === 'DAY1').length > 0 ? (
-                            places.filter(place => place.whichDay === 'DAY1').map((place) => (
-                                <Place key={place.id} place={place} />
-                            ))
-                        ) : (
-                            <p>DAY1 Loading place information...</p>
-                        )}
-                    </Tab>
-                    <Tab eventKey="DAY2" title="DAY2">
-                        {places.filter(place => place.whichDay === 'DAY2').length > 0 ? (
-                            places.filter(place => place.whichDay === 'DAY2').map((place) => (
-                                <Place key={place.id} place={place} />
-                            ))
-                        ) : (
-                            <p>DAY2 Loading place information...</p>
-                        )}
-                    </Tab>
-                    <Tab eventKey="DAY3" title="DAY3">
-                        {places.filter(place => place.whichDay === 'DAY3').length > 0 ? (
-                            places.filter(place => place.whichDay === 'DAY3').map((place) => (
-                                <Place key={place.id} place={place} />
-                            ))
-                        ) : (
-                            <p>DAY3 Loading place information...</p>
-                        )}
-                    </Tab>
+                    {['DAY1', 'DAY2', 'DAY3'].map(day => (
+                        <Tab eventKey={day} title={day} key={day}>
+                            {places.filter(place => place.whichDay === day).length > 0 ? (
+                                places.filter(place => place.whichDay === day).map((place) => (
+                                    <Place 
+                                        key={place.id} 
+                                        place={place} 
+                                        onPlaceClick={handlePlaceClick} // 클릭 이벤트 핸들러 전달
+                                    />
+                                ))
+                            ) : (
+                                <p>{day} Loading place information...</p>
+                            )}
+                        </Tab>
+                    ))}
                 </Tabs>
             </div>           
             <div style={{ flexGrow: 1 }}>
-                <Maps />                   
+                <Maps position={mapPosition} placeName={placeName} /> 
             </div>
         </div>
     );
