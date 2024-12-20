@@ -5,7 +5,7 @@ import * as React from "react";
 const SvgJisunKorea = ({hoveredRegion} ) => {
   const getColor = (region) => {
     if (hoveredRegion === region) {
-        return 'red'; // 마우스가 올라간 지역의 색상
+        return 'red'; 
     }
     return "#C6C6C6"; 
 };
