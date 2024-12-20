@@ -45,8 +45,8 @@ const LoginModal = () => {
         });
     };
 
-    // OAuth2 로그인 URL (Spring Boot에서 설정한 경로)
-    const googleLoginUrl = '/oauth2/authorization/google';
+    // OAuth2  URL
+    const googleLoginUrl = 'http://localhost:8080/oauth2/authorization/google';
 
     // 회원가입 URL (예시)
     const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
