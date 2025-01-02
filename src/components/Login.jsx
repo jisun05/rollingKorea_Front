@@ -102,7 +102,7 @@ const LoginModal = () => {
                             Google Login
                             </Button>
                              {isLoginVisible && (
-                                <GoogleOAuthProvider clientId="386257786961-e3udpn75tlqvi29ejnkc3sagve80aqjf.apps.googleusercontent.com"> {/* GoogleOAuthProvider로 감싸기 */}
+                                <GoogleOAuthProvider CLIENT_ID> {/* GoogleOAuthProvider로 감싸기 */}
                                     <LoginOauth2 />
                                 </GoogleOAuthProvider>
                              )}
