@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import LoginOauth2 from './LoginOauth2';
+import { GoogleOAuthProvider } from '@react-oauth/google'; // GoogleOAuthProvider 임포트
 
 const LoginModal = () => {
     const [show, setShow] = useState(false);
@@ -8,6 +10,11 @@ const LoginModal = () => {
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [isLoginVisible, setIsLoginVisible] = useState(false);
+
+    const handleLoginClick = () => {
+        setIsLoginVisible(true);
+    };
 
     const handleClose = () => {
         setShow(false);
@@ -15,7 +22,9 @@ const LoginModal = () => {
         setPassword('');
         setErrorMessage('');
         setSuccessMessage('');
+        setIsLoginVisible(false); // 로그인 상태 초기화
     };
+
     const handleShow = () => setShow(true);
 
     const handleSubmit = (e) => {
@@ -45,10 +54,6 @@ const LoginModal = () => {
         });
     };
 
-    // OAuth2  URL
-    const googleLoginUrl = 'http://localhost:8080/oauth2/authorization/google';
-
-    // 회원가입 URL (예시)
     const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
 
     return (
@@ -90,12 +95,17 @@ const LoginModal = () => {
                                 Login
                             </Button>
                             <Button 
-                                variant="primary" 
-                                onClick={() => window.location.href = googleLoginUrl}
-                                style={{ marginRight: '1rem' }}
+                             variant="primary" 
+                             onClick={handleLoginClick}
+                             style={{ marginRight: '1rem' }}
                             >
-                                Google Login
+                            Google Login
                             </Button>
+                             {isLoginVisible && (
+                                <GoogleOAuthProvider clientId="386257786961-e3udpn75tlqvi29ejnkc3sagve80aqjf.apps.googleusercontent.com"> {/* GoogleOAuthProvider로 감싸기 */}
+                                    <LoginOauth2 />
+                                </GoogleOAuthProvider>
+                             )}
                             <Button 
                                 variant="primary" 
                                 onClick={() => window.location.href = signUpUrl}
