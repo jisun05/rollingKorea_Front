@@ -1,41 +1,35 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import LoginOauth2 from './LoginOauth2';
-import { GoogleOAuthProvider } from '@react-oauth/google'; // GoogleOAuthProvider 임포트
-import SignupModal from './SignUp'; 
 
-const LoginModal = () => {
+const SignupModal = () => {
     const [show, setShow] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const [isLoginVisible, setIsLoginVisible] = useState(false);
-    const [showSignup, setShowSignup] = useState(false); // 회원가입 모달 상태 추가
-
-    const handleLoginClick = () => {
-        setIsLoginVisible(true);
-    };
 
     const handleClose = () => {
         setShow(false);
         setEmail('');
         setPassword('');
+        setConfirmPassword('');
         setErrorMessage('');
         setSuccessMessage('');
-        setIsLoginVisible(false); // 로그인 상태 초기화
     };
 
-    const handleShow = () => {
-        setShow(true);
-        setShowSignup(false); // 로그인 모달 열 때 회원가입 모달 닫기
-    };
+    const handleShow = () => setShow(true);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // 로그인 요청을 백엔드로 보냅니다.
-        fetch('/api/login', {
+        if (password !== confirmPassword) {
+            setErrorMessage('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        // 회원가입 요청을 백엔드로 보냅니다.
+        fetch('/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -44,12 +38,12 @@ const LoginModal = () => {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('로그인 실패');
+                throw new Error('회원가입 실패');
             }
             return response.json();
         })
         .then(data => {
-            setSuccessMessage('로그인 성공!');
+            setSuccessMessage('회원가입 성공!');
             console.log(data);
             handleClose(); // 모달 닫기
         })
@@ -59,15 +53,13 @@ const LoginModal = () => {
         });
     };
 
-    const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
-
     return (
         <>
-            <Nav.Link onClick={handleShow}>LogIn</Nav.Link>
+            <Nav.Link onClick={handleShow}>SignUp</Nav.Link>
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Login</Modal.Title>
+                    <Modal.Title>Sign Up</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
@@ -95,35 +87,27 @@ const LoginModal = () => {
                             />
                         </Form.Group>
 
+                        <Form.Group controlId="formBasicConfirmPassword">
+                            <Form.Label>Confirm Password</Form.Label>
+                            <Form.Control
+                                type="password"
+                                placeholder="confirm your password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+
                         <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '2rem' }}>
                             <Button variant="primary" type="submit" style={{ marginRight: '1rem' }}>
-                                Login
-                            </Button>
-                            <Button 
-                             variant="primary" 
-                             onClick={handleLoginClick}
-                             style={{ marginRight: '1rem' }}
-                            >
-                            Google Login
-                            </Button>
-                             {isLoginVisible && (
-                                <GoogleOAuthProvider CLIENT_ID> {/* GoogleOAuthProvider로 감싸기 */}
-                                    <LoginOauth2 />
-                                </GoogleOAuthProvider>
-                             )}
-                            <Button 
-                                variant="primary" 
-                                onClick={() => setShowSignup(true)} // 회원가입 모달 열기
-                                >
-                            <SignupModal show={showSignup} onHide={() => setShowSignup(false)} />
+                                Sign Up
                             </Button>
                         </div>
                     </Form>
                 </Modal.Body>
             </Modal>
-          
         </>
     );
 };
 
-export default LoginModal;
+export default SignupModal;
