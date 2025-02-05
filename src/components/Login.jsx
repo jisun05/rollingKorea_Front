@@ -35,7 +35,7 @@ const LoginModal = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // 로그인 요청을 백엔드로 보냅니다.
-        fetch('/api/login', {
+        fetch('/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ const LoginModal = () => {
         });
     };
 
-    const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
+    //const signUpUrl = '/signup'; // 실제 회원가입 경로로 수정 필요
 
     return (
         <>
