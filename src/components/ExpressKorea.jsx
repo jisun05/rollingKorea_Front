@@ -2,7 +2,7 @@ import * as React from "react";
 
 
 
-const SvgJisunKorea = ({hoveredRegion} ) => {
+const SvgExpressKorea = ({hoveredRegion} ) => {
   const getColor = (region) => {
     if (hoveredRegion === region) {
         return 'red'; 
@@ -50,4 +50,5 @@ return (
   </svg>
 );
 };
-export default SvgJisunKorea;
+
+export default SvgExpressKorea;

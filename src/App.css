@@ -36,3 +36,44 @@
     transform: rotate(360deg);
   }
 }
+
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 70px;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 250px;
+  justify-content: center;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 270px;
+  margin-top: 150px;
+  margin-left: 200px;
+}
+
+.svg-container {
+  display: flex;
+  flex-direction: row;
+  gap: 250px;
+  justify-content: center;
+  margin-top: 110px;
+}
+
+.button-link {
+  text-decoration: none;
+}
+
+.region-button {
+  width: 100%;
+}
+

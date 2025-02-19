@@ -1,76 +1,67 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
-import {Navbar,Container,Nav,Button} from 'react-bootstrap';
+import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import Details from './components/Details';
-import SvgJisunKorea from './components/JisunKorea'
-import LoginModal from './components/Login'
-import { Routes, Route, Link} from 'react-router-dom';
-function App() {
+import SvgExpressKorea from './components/ExpressKorea';
+import LoginModal from './components/Login';
+import { Routes, Route, Link } from 'react-router-dom';
 
-    const [hoveredButton, setHoveredButton] = useState(null); // 어떤 버튼이 hovered 되었는지를 추적
+function App() {
+    const [hoveredButton, setHoveredButton] = useState(null); 
+
     const handleMouseEnter = (buttonName) => {
-        setHoveredButton(buttonName); // 버튼에 마우스가 들어갔을 때 상태 변경
+        setHoveredButton(buttonName);
     };
 
     const handleMouseLeave = () => {
-        setHoveredButton(null); // 마우스가 버튼을 떠날 때 상태 초기화
+        setHoveredButton(null);
     };
-  
-  return (
-    
-    <div className="App">
-    <Navbar bg="primary" data-bs-theme="dark">
-    <Container>
-      <Navbar.Brand href="/">Rolling Korea</Navbar.Brand>
-      <Nav className="me-auto">
-        <Nav.Link href="/">Home</Nav.Link> 
-        <Nav.Link href="/login"><LoginModal /></Nav.Link>           
-      </Nav>
-    </Container>
-  </Navbar>
-  <Routes>
-        <Route path="/" element={
 
-<div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    height: '100vh', 
-    margin: 70 
-    
-}}>
-<div style={{ display: 'flex', flexDirection: 'row', gap: '250px', justifyContent: 'center' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', width : "270px", marginTop: '150px', marginLeft: '200px' }}>
-                    {['Gyeonggi Area', 'Chungnam Area', 'Chungbuk Area', 'Jeonbuk Area', 'Jeonnam Area', 'Gyeongnam Area', 'Gyeongbuk Area', 'Gangwon Area', 'Jeju Area'].map((region) => (
-                        <Link to={`/details/${region}`} key={region} style={{ textDecoration: 'none' }}>
-                            <Button
-                                variant="primary"
-                                size="lg"
-                                style={{ width: '100%' }}
-                                onMouseEnter={() => handleMouseEnter(region)} // 마우스가 버튼에 들어갈 때
-                                onMouseLeave={handleMouseLeave} // 마우스가 버튼을 떠날 때                            
-                            >
-                                {region}
-                            </Button>
-                        </Link>
-                        ))}.
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'row', gap: '250px', justifyContent: 'center',marginTop: '110px' }}>
-                        <SvgJisunKorea hoveredRegion={hoveredButton} /> {/* hoveredRegion prop 전달 */}
-                    </div>
-                </div>
-            </div>     
-        }/>
+    return (
+        <div className="App">
+            <Navbar bg="primary" data-bs-theme="dark">
+                <Container>
+                    <Navbar.Brand as={Link} to="/">Rolling Korea</Navbar.Brand>
+                    <Nav className="me-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link> 
+                        <Nav.Link as={Link} to="/login">
+                            <LoginModal />
+                        </Nav.Link>           
+                    </Nav>
+                </Container>
+            </Navbar>
 
-            <Route path="/details/:region" element={<Details />} />  
-    </Routes>
-    
-
-  
+            <Routes>
+                <Route path="/" element={
+                    <div className="centered-container">
+                        <div className="main-layout">
+                            <div className="button-container">
+                                {['Gyeonggi Area', 'Chungnam Area', 'Chungbuk Area', 'Jeonbuk Area', 'Jeonnam Area', 
+                                  'Gyeongnam Area', 'Gyeongbuk Area', 'Gangwon Area', 'Jeju Area'].map((region) => (
+                                    <Link to={`/details/${region}`} key={region} className="button-link">
+                                        <Button
+                                            variant="primary"
+                                            size="lg"
+                                            className="region-button"
+                                            onMouseEnter={() => handleMouseEnter(region)}
+                                            onMouseLeave={handleMouseLeave}                            
+                                        >
+                                            {region}
+                                        </Button>
+                                    </Link>
+                                ))}
+                            </div>
+                            <div className="svg-container">
+                                <SvgExpressKorea hoveredRegion={hoveredButton} />
+                            </div>
+                        </div>
+                    </div>     
+                }/>
+                <Route path="/details/:region" element={<Details />} />  
+            </Routes>
         </div>
     );
 }
-
 
 export default App;
