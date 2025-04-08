@@ -5,15 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import ErrorBoundary from './utils/ErrorBoundary';
+import { AuthProvider } from './components/login/AuthContext'; //  추가
 
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <AuthProvider> {/* 로그인 상태 전역 관리용 Context 추가 */}
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

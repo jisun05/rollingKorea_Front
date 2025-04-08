@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import LoginOauth2 from './LoginOauth2';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthContext } from './AuthContext';
 
-const LoginModal = ({ onLoginSuccess }) => {
+const LoginModal = () => {
     const [show, setShow] = useState(false);
+    const { login } = useContext(AuthContext);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
+    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
     return (
         <>
             <Button
@@ -26,11 +27,11 @@ const LoginModal = ({ onLoginSuccess }) => {
                     <Modal.Title>Google Login</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <GoogleOAuthProvider clientId="386257786961-e3udpn75tlqvi29ejnkc3sagve80aqjf.apps.googleusercontent.com">
+                    <GoogleOAuthProvider clientId={clientId}>
                         <LoginOauth2
                             onLoginSuccess={() => {
-                                if (onLoginSuccess) onLoginSuccess();
-                                handleClose();
+                                login();       // 전역 로그인 처리
+                                handleClose(); // 모달 닫기
                             }}
                         />
                     </GoogleOAuthProvider>

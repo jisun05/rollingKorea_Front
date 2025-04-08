@@ -1,39 +1,26 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import Details from './components/Details';
 import SvgExpressKorea from './components/ExpressKorea';
-import LoginModal from './components/Login/Login';
+import LoginModal from './components/login/Login';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from './components/login/AuthContext';
 
 function App() {
     const [hoveredButton, setHoveredButton] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
+    const { isLoggedIn, logout } = useContext(AuthContext);
 
-    useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        if (token) setIsLoggedIn(true);
-    }, []);
-
-    const handleMouseEnter = (buttonName) => {
-        setHoveredButton(buttonName);
-    };
-
-    const handleMouseLeave = () => {
-        setHoveredButton(null);
-    };
+    const handleMouseEnter = (buttonName) => setHoveredButton(buttonName);
+    const handleMouseLeave = () => setHoveredButton(null);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        setIsLoggedIn(false);
+        logout();
         alert('로그아웃 되었습니다.');
         navigate('/');
-    };
-
-    const handleLoginSuccess = () => {
-        setIsLoggedIn(true);
     };
 
     return (
@@ -43,9 +30,7 @@ function App() {
                     <Navbar.Brand as={Link} to="/">Rolling Korea</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        
-                        {/* 🔥 key={isLoggedIn}를 추가해서 Nav를 리렌더링하게 만듦 */}
-                        <Nav className="ms-auto d-flex align-items-center" key={isLoggedIn}>
+                        <Nav className="ms-auto d-flex align-items-center">
                             <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
                             <Nav.Link as={Link} to="/region" className="text-white">Region</Nav.Link>
                             <Nav.Link as={Link} to="/ranking" className="text-white">Ranking</Nav.Link>
@@ -57,7 +42,7 @@ function App() {
                                 </>
                             ) : (
                                 <Nav.Item>
-                                    <LoginModal onLoginSuccess={handleLoginSuccess} />
+                                    <LoginModal />
                                 </Nav.Item>
                             )}
                         </Nav>
