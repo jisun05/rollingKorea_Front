@@ -2,18 +2,17 @@ import React from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 
 const LoginOauth2 = () => {
-    // OAuth2 URL
-    const googleLoginUrl = process.env.REACT_APP_GOOGLE_LOGIN_URL; // 환경 변수에서 URL 가져오기
+    const googleLoginUrl = process.env.REACT_APP_GOOGLE_LOGIN_URL || 'http://localhost:8080/api/google/login';
 
     const handleLoginSuccess = (credentialResponse) => {
         console.log('Login Success:', credentialResponse);
-        // 서버에 로그인 요청을 보내는 로직 추가
+
         fetch(googleLoginUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token: credentialResponse.credential }),
+            body: JSON.stringify({ idToken: credentialResponse.credential }),
         })
         .then(response => {
             if (!response.ok) {
@@ -22,16 +21,20 @@ const LoginOauth2 = () => {
             return response.json();
         })
         .then(data => {
-            console.log('OAuth2 Login Success:', data);
-            // 로그인 성공 후 처리
+            console.log('서버 응답:', data);
+            localStorage.setItem('accessToken', data.token); // JWT 저장
+            alert('로그인 성공!');
+            // 추가 리다이렉트 또는 상태 업데이트 가능
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('로그인 중 오류 발생');
         });
     };
 
-    const handleLoginError = (error) => {
-        console.error('Login Failed:', error);
+    const handleLoginError = () => {
+        console.error('Google 로그인 실패');
+        alert('Google 로그인 실패');
     };
 
     return (
@@ -39,6 +42,7 @@ const LoginOauth2 = () => {
             <GoogleLogin
                 onSuccess={handleLoginSuccess}
                 onError={handleLoginError}
+                useOneTap
             />
         </div>
     );
