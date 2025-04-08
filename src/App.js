@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import Details from './components/Details';
 import SvgExpressKorea from './components/ExpressKorea';
-import LoginModal from './components/Login';
+import LoginModal from './components/Login/Login';
 import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 
 function App() {
@@ -43,17 +43,22 @@ function App() {
                     <Navbar.Brand as={Link} to="/">Rolling Korea</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="ms-auto d-flex align-items-center">
-                            <Nav.Link as={Link} to="/">Home</Nav.Link>
-
-                            {isLoggedIn && (
-                                <Nav.Link as={Link} to="/mypage">My Page</Nav.Link>
-                            )}
+                        
+                        {/* 🔥 key={isLoggedIn}를 추가해서 Nav를 리렌더링하게 만듦 */}
+                        <Nav className="ms-auto d-flex align-items-center" key={isLoggedIn}>
+                            <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
+                            <Nav.Link as={Link} to="/region" className="text-white">Region</Nav.Link>
+                            <Nav.Link as={Link} to="/ranking" className="text-white">Ranking</Nav.Link>
 
                             {isLoggedIn ? (
-                                <Nav.Link onClick={handleLogout}>LogOut</Nav.Link>
+                                <>
+                                    <Nav.Link as={Link} to="/mypage" className="text-white">My Page</Nav.Link>
+                                    <Nav.Link onClick={handleLogout} className="text-white">LogOut</Nav.Link>
+                                </>
                             ) : (
-                                <LoginModal onLoginSuccess={handleLoginSuccess} />
+                                <Nav.Item>
+                                    <LoginModal onLoginSuccess={handleLoginSuccess} />
+                                </Nav.Item>
                             )}
                         </Nav>
                     </Navbar.Collapse>
@@ -90,8 +95,9 @@ function App() {
                     </div>
                 } />
                 <Route path="/details/:region" element={<Details />} />
-                {/* 마이페이지 라우트 필요시 추가 */}
-                {/* <Route path="/mypage" element={<MyPage />} /> */}
+                <Route path="/region" element={<div style={{ padding: '2rem' }}>Region 페이지입니다.</div>} />
+                <Route path="/ranking" element={<div style={{ padding: '2rem' }}>Ranking 페이지입니다.</div>} />
+                <Route path="/mypage" element={<div style={{ padding: '2rem' }}>My Page입니다.</div>} />
             </Routes>
         </div>
     );
