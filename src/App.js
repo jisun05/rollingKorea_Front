@@ -32,7 +32,7 @@ function App() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto d-flex align-items-center">
                             <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
-                            <Nav.Link as={Link} to="/region" className="text-white">Region</Nav.Link>
+                            <Nav.Link as={Link} to="/details/Seoul Area" className="text-white">Region</Nav.Link>
                             <Nav.Link as={Link} to="/ranking" className="text-white">Ranking</Nav.Link>
 
                             {isLoggedIn ? (
@@ -56,7 +56,7 @@ function App() {
                         <div className="main-layout">
                             <div className="button-container">
                                 {[
-                                    'Gyeonggi Area', 'Chungnam Area', 'Chungbuk Area',
+                                    'Seoul Area', 'Gyeonggi Area', 'Chungnam Area', 'Chungbuk Area',
                                     'Jeonbuk Area', 'Jeonnam Area', 'Gyeongnam Area',
                                     'Gyeongbuk Area', 'Gangwon Area', 'Jeju Area'
                                 ].map((region) => (

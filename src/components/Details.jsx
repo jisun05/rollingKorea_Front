@@ -16,6 +16,7 @@ function Details() {
     const navigate = useNavigate();
 
     const options = [
+        'Seoul Area',
         'Gyeonggi Area',
         'Chungnam Area',
         'Chungbuk Area',
