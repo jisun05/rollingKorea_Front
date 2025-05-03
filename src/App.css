@@ -77,3 +77,27 @@
   width: 100%;
 }
 
+.region-detail {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  height: calc(100vh - 56px); /* 헤더 높이(약 56px) 만큼 뺀 전체 높이 */
+}
+
+.region-detail__sidebar {
+  flex: 0 0 30rem;
+  overflow-y: auto;
+}
+
+.region-detail__map {
+  flex: 1;
+  min-width: 0;      /* 넘침 방지 */
+  min-height: 0;     /* 넘침 방지 */
+  display: flex;
+}
+
+/* 실제 Leaflet 컨테이너에 100% 크기 강제 */
+.region-detail__map .leaflet-container {
+  width: 100%;
+  height: 100%;
+}

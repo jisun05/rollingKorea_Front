@@ -3,10 +3,10 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import Details from './components/Details';
+import RegionDetailPage from './features/region/RegionDetailPage';
 import SvgExpressKorea from './components/ExpressKorea';
 import Layout from './components/Layout';
-import {Button } from 'react-bootstrap';  // ← 여기
+import { Button } from 'react-bootstrap';  // ← 여기
 
 function App() {
   const [hoveredButton, setHoveredButton] = useState(null);
@@ -52,7 +52,7 @@ function App() {
             </div>
           }
         />
-        <Route path="/details/:region" element={<Details />} />
+        <Route path="/details/:region" element={<RegionDetailPage />} />
         <Route
           path="/ranking"
           element={<div style={{ padding: '2rem' }}>Ranking 페이지입니다.</div>}
