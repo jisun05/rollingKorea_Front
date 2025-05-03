@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import ErrorBoundary from './utils/ErrorBoundary';
-import { AuthProvider } from './components/login/AuthContext'; //  추가
+import AuthProvider from './features/auth/AuthProvider'; 
 
 const container = document.getElementById('root');
 const root = createRoot(container);
@@ -18,7 +18,8 @@ root.render(
         </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
+   document.getElementById('root')
 );
 
 reportWebVitals();
