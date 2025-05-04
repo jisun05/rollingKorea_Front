@@ -16,7 +16,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/details/:region" element={<RegionDetailPage />} />
         <Route path="/ranking" element={<RankingPage />} />
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/myPage" element={<MyPage />} />
       </Routes>
     </Layout>
   );
