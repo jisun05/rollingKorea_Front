@@ -1,17 +1,14 @@
-// src/components/MyPage/BasicInfo.js
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import EditableField from './EditableField';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;  // .env.* 에서 정의
-
-// 'firstName'을 'userName'으로 변경
 const editableFields = ['userName', 'nickname', 'location', 'mobile', 'birthday'];
 
 const labelMap = {
   email:     'Email',
-  userName:  'User Name',    // 변경된 라벨
+  userName:  'User Name',
   nickname:  'Nick Name',
   location:  'Location',
   mobile:    'Mobile Number',
@@ -48,7 +45,8 @@ export default function BasicInfo() {
 
   const handleSave = async (field, newVal) => {
     const prev = user[field];
-    setUser(u => ({ ...u, [field]: newVal }));  // Optimistic UI
+    // 1) Optimistic UI: 즉시 업데이트
+    setUser(u => ({ ...u, [field]: newVal }));
 
     try {
       const res = await axios.patch(
@@ -56,10 +54,12 @@ export default function BasicInfo() {
         { [field]: newVal },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setUser(res.data);
+      // 2) 응답 데이터를 병합하여 다른 필드가 초기화되지 않도록 함
+      setUser(u => ({ ...u, ...res.data }));
     } catch (err) {
       console.error('업데이트 실패', err.response || err);
-      setUser(u => ({ ...u, [field]: prev }));  // 롤백
+      // 3) 롤백: 실패 시 이전 값으로 복원
+      setUser(u => ({ ...u, [field]: prev }));
     }
   };
 
