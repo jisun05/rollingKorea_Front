@@ -5,9 +5,9 @@ import { Button } from 'react-bootstrap';
 import SvgExpressKorea from '../../components/ExpressKorea';
 
 const REGIONS = [
-  'Seoul Area','Gyeonggi Area','Chungnam Area','Chungbuk Area',
-  'Jeonbuk Area','Jeonnam Area','Gyeongnam Area','Gyeongbuk Area',
-  'Gangwon Area','Jeju Area'
+  'Seoul','Gyeonggi','Chungnam','Chungbuk',
+  'Jeonbuk','Jeonnam','Gyeongnam','Gyeongbuk',
+  'Gangwon','Jeju'
 ];
  
 export default function HomePage() {

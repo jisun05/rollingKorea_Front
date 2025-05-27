@@ -1,9 +1,7 @@
-// src/features/region/RegionDetailPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/Log';
 import RegionSelector from './RegionSelector';
-import PlaceTabs from './PlaceTabs';
 import Maps from '../../modules/Maps';
 
 export default function RegionDetailPage() {
@@ -16,10 +14,11 @@ export default function RegionDetailPage() {
   const [mapName, setMapName] = useState('');
 
   useEffect(() => {
+    console.log("현재 region 값:", region);
     setSelectedRegion(region);
     apiClient
-      .get(`/api/place?region=${encodeURIComponent(region)}`)
-      .then(res => setPlaces(res.data))
+      .get(`/api/places?region=${encodeURIComponent(region)}`)
+      .then(res => setPlaces(res.data.content))  // 페이지네이션 구조일 때 .content 접근
       .catch(console.error);
   }, [region]);
 
@@ -42,10 +41,19 @@ export default function RegionDetailPage() {
           value={selectedRegion}
           onChange={handleRegionChange}
         />
-        <PlaceTabs
-          places={places}
-          onPlaceClick={handlePlaceClick}
-        />
+
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {places.length === 0 ? (
+            <li>해당 지역의 문화유산 정보가 없습니다.</li>
+          ) : (
+            places.map(place => (
+              <li key={place.id} style={{ cursor: 'pointer', marginBottom: '8px' }}
+                  onClick={() => handlePlaceClick(place.latitude, place.longitude, place.name)}>
+                📍 {place.name}
+              </li>
+            ))
+          )}
+        </ul>
       </div>
 
       {/* 오른쪽 지도 */}
