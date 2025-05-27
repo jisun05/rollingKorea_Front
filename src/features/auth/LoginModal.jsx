@@ -1,44 +1,29 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import LoginOauth2 from './LoginOauth2';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { AuthContext } from './AuthContext';
+import { FcGoogle } from 'react-icons/fc';  // Google 아이콘 추가
+import { useAuth } from './AuthContext';
 
-const LoginModal = () => {
-    const [show, setShow] = useState(false);
-    const { login } = useContext(AuthContext);
+export default function LoginModal({ show, handleClose }) {
+  const { login } = useAuth();
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-    return (
-        <>
-            <Button
-                variant="link"
-                onClick={handleShow}
-                className="text-white p-0"
-                style={{ textDecoration: 'none' }}
-            >
-                LogIn
-            </Button>
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Google Login</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <GoogleOAuthProvider clientId={clientId}>
-                        <LoginOauth2
-                            onLoginSuccess={() => {
-                                login();       // 전역 로그인 처리
-                                handleClose(); // 모달 닫기
-                            }}
-                        />
-                    </GoogleOAuthProvider>
-                </Modal.Body>
-            </Modal>
-        </>
-    );
-};
-
-export default LoginModal;
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Social Login</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className="d-flex flex-column align-items-center">
+        <Button
+          variant="light"
+          className="d-flex align-items-center"
+          onClick={() => {
+            login();
+            handleClose();  // 모달 닫기
+          }}
+        >
+          <FcGoogle size={24} style={{ marginRight: '8px' }} />
+          Google로 로그인
+        </Button>
+      </Modal.Body>
+    </Modal>
+  );
+}

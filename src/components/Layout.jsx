@@ -1,11 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../features/auth/AuthContext';
+import { useAuth } from '../features/auth/AuthContext';
 import LoginModal from '../features/auth/LoginModal';
 
 export default function Layout({ children }) {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout } = useAuth();
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,38 +23,26 @@ export default function Layout({ children }) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto d-flex align-items-center">
-              <Nav.Link as={Link} to="/" className="text-white">
-                Home
-              </Nav.Link>
-              <Nav.Link as={Link} to="/details/Seoul Area" className="text-white">
-                Region
-              </Nav.Link>
-              <Nav.Link as={Link} to="/ranking" className="text-white">
-                Ranking
-              </Nav.Link>
+              <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
+              <Nav.Link as={Link} to="/details/Seoul Area" className="text-white">Region</Nav.Link>
+              <Nav.Link as={Link} to="/ranking" className="text-white">Ranking</Nav.Link>
 
               {isLoggedIn ? (
                 <>
-                  <Nav.Link as={Link} to="/mypage" className="text-white">
-                    My Page
-                  </Nav.Link>
-                  <Nav.Link onClick={handleLogout} className="text-white">
-                    LogOut
-                  </Nav.Link>
+                  <Nav.Link as={Link} to="/mypage" className="text-white">My Page</Nav.Link>
+                  <Nav.Link onClick={handleLogout} className="text-white" style={{ cursor: 'pointer' }}>LogOut</Nav.Link>
                 </>
               ) : (
-                <Nav.Item>
-                  <LoginModal />
-                </Nav.Item>
+                <Nav.Link as="span" onClick={() => setShowModal(true)} className="text-white" style={{ cursor: 'pointer' }}>LogIn</Nav.Link>
               )}
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      <Container style={{ marginTop: '2rem' }}>
-        {children}
-      </Container>
+      <Container style={{ marginTop: '2rem' }}>{children}</Container>
+
+      <LoginModal show={showModal} handleClose={() => setShowModal(false)} />
     </>
   );
 }

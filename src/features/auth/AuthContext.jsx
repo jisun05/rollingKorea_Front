@@ -1,26 +1,44 @@
-import { createContext, useState, useEffect } from 'react';
+// src/features/auth/AuthContext.js
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getCurrentUser, logoutRequest } from './authApi';
+
 
 export const AuthContext = createContext();
 
+export const useAuth = () => useContext(AuthContext);
+
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const fetchUser = async () => {
+    try {
+      const data = await getCurrentUser();
+      setIsLoggedIn(true);
+      setUser(data);
+    } catch {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) setIsLoggedIn(true);
+    fetchUser();
   }, []);
 
   const login = () => {
-    setIsLoggedIn(true);
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
-  const logout = () => {
-    localStorage.removeItem('accessToken');
+  const logout = async () => {
+    await logoutRequest();
     setIsLoggedIn(false);
+    setUser(null);
+    window.location.href = '/';
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
