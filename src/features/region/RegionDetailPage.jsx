@@ -1,4 +1,3 @@
-// src/features/region/RegionDetailPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/Log';
@@ -18,7 +17,7 @@ export default function RegionDetailPage() {
   const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    console.log("현재 region 값:", region);
+   
     setSelectedRegion(region);
     apiClient
       .get(`/api/places?region=${encodeURIComponent(region)}`)
@@ -28,7 +27,7 @@ export default function RegionDetailPage() {
 
   const handleRegionChange = newRegion => {
     setSelectedRegion(newRegion);
-    navigate(`/details/${encodeURIComponent(newRegion)}`);
+    navigate(`/region/${encodeURIComponent(newRegion)}`);
   };
 
   const handlePlaceClick = (lat, lng, name) => {

@@ -1,4 +1,3 @@
-// src/features/home/HomePage.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
@@ -18,7 +17,7 @@ export default function HomePage() {
       <div className="main-layout">
         <div className="button-container">
           {REGIONS.map(region => (
-            <Link to={`/details/${region}`} key={region} className="button-link">
+            <Link to={`/region/${region}`} key={region} className="button-link">
               <Button
                 variant="primary"
                 size="lg"

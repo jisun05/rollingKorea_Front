@@ -24,7 +24,7 @@ export default function Layout({ children }) {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto d-flex align-items-center">
               <Nav.Link as={Link} to="/" className="text-white">Home</Nav.Link>
-              <Nav.Link as={Link} to="/details/Seoul Area" className="text-white">Region</Nav.Link>
+              <Nav.Link as={Link} to="/region/Seoul" className="text-white">Region</Nav.Link>
               <Nav.Link as={Link} to="/ranking" className="text-white">Ranking</Nav.Link>
 
               {isLoggedIn ? (
