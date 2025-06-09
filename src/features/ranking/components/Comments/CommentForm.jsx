@@ -1,13 +1,20 @@
+// src/features/ranking/components/Comments/CommentForm.jsx
 import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 
-export default function CommentForm() {
+export default function CommentForm({
+  onSubmit = () => console.error('[CommentForm] onSubmit missing'),
+  isLoading = false
+}) {
   const [text, setText] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    if (!text.trim()) return;
-    // TODO: API POST /api/comments
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    console.log('[CommentForm] handleSubmit, text=', trimmed);
+    onSubmit(trimmed);
     setText('');
   };
 
@@ -19,9 +26,15 @@ export default function CommentForm() {
         placeholder="Share some thoughts..."
         value={text}
         onChange={e => setText(e.target.value)}
+        disabled={isLoading}
       />
       <div className="text-end mt-2">
-        <Button type="submit" variant="purple">Submit</Button>
+        <Button type="submit" variant="purple" disabled={isLoading}>
+          {isLoading
+            ? <Spinner as="span" animation="border" size="sm" />
+            : 'Submit'
+          }
+        </Button>
       </div>
     </Form>
   );

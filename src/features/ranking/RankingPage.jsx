@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import RankingList from './components/RankingList';
-import Comments from './components/Comments';
+import Comments from './components/Comments/Comments';
 
 export default function RankingPage() {
   return (

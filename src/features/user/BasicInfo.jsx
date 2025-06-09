@@ -2,58 +2,38 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
-import EditableField from './EditableField'
+import EditableField from './EditableField';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
-const labelMap = {
-  email:     'Email',
-  nickName:  'Nick Name',
-  mobile:    'Mobile Number',
-  userName:  'User Name',
-  location:  'Location',
-  birthday:  'Birthday',
-};
-
-const typeMap = {
-  email:    'email',
-  birthday: 'date',
-  mobile:   'tel',
-};
+// 1) 한 번만 세팅해 주세요
+axios.defaults.withCredentials = true;
 
 export default function BasicInfo() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser]         = useState(null);
+  const [loading, setLoading]   = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const token = localStorage.getItem('accessToken');
-  const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const navigate                = useNavigate();
+  const { logout }              = useContext(AuthContext);
 
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => setUser(res.data))
-    .catch(err => {
-      console.error('프로필 조회 실패', err.response || err);
-      setLoadError(true);
-    })
-    .finally(() => setLoading(false));
-  }, [token]);
+    // 2) 상대경로로 요청 → CRA dev 서버가 http://localhost:8080 으로 프록시
+    axios.get('/api/users/me')
+      .then(res => setUser(res.data))
+      .catch(err => {
+        console.error('프로필 조회 실패', err);
+        setLoadError(true);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)   return <div>Loading...</div>;
   if (loadError) return <div>프로필 정보를 가져오는 데 실패했습니다. 다시 시도해주세요.</div>;
 
-  const getBirthdayString = raw => {
+  const formatDate = raw => {
     if (!raw) return '';
-    if (typeof raw === 'string') {
-      return raw.split('T')[0];
-    }
-    if (typeof raw === 'number') {
-      return new Date(raw).toISOString().split('T')[0];
-    }
+    if (typeof raw === 'string')      return raw.split('T')[0];
+    if (typeof raw === 'number')      return new Date(raw).toISOString().split('T')[0];
     if (raw.year && raw.month && raw.day) {
       const m = String(raw.month).padStart(2, '0');
       const d = String(raw.day).padStart(2, '0');
@@ -66,96 +46,71 @@ export default function BasicInfo() {
     return '';
   };
 
-  const handleSave = async (apiKey, newVal) => {
-    const prev = apiKey === 'birthday'
-      ? getBirthdayString(user.birthday)
-      : apiKey === 'nickname'
-        ? user.nickName
-        : apiKey === 'mobile'
-          ? user.phoneNumber
-          : user[apiKey];
-
-    setUser(u => ({
-      ...u,
-      [apiKey === 'nickname' ? 'nickName'
-        : apiKey === 'mobile'   ? 'phoneNumber'
-        : apiKey]: newVal
-    }));
+  const handleSave = async (field, newVal) => {
+    const prev = user[field];
+    setUser(u => ({ ...u, [field]: newVal }));
 
     try {
       const res = await axios.patch(
-        `${API_BASE_URL}/users/me`,
-        { [apiKey]: newVal },
-        { headers: { Authorization: `Bearer ${token}` } }
+        '/api/users/me',
+        { [field]: newVal }
       );
       setUser(res.data);
     } catch (err) {
-      console.error('업데이트 실패', err.response || err);
-      setUser(u => ({
-        ...u,
-        [apiKey === 'nickname' ? 'nickName'
-          : apiKey === 'mobile'   ? 'phoneNumber'
-          : apiKey]: prev
-      }));
+      console.error('업데이트 실패', err);
+      setUser(u => ({ ...u, [field]: prev }));
     }
   };
 
   const handleWithdraw = async () => {
     if (!window.confirm('정말 탈퇴하시겠습니까?')) return;
     try {
-      await axios.delete(`${API_BASE_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete('/api/users/me');
       logout();
       navigate('/', { replace: true });
     } catch (err) {
-      console.error('탈퇴 실패', err.response || err);
+      console.error('탈퇴 실패', err);
       alert('탈퇴 도중 오류가 발생했습니다.');
     }
   };
 
   return (
     <>
-      <EditableField
-        label={labelMap.email}
-        type={typeMap.email}
-        value={user.loginId}
-        readOnly
-      />
+      <EditableField label="Email"    type="email"  value={user.loginId} readOnly />
 
       <EditableField
-        label={labelMap.nickName}
+        label="Nick Name"
         type="text"
-        value={user.nickName || ''}
-        onSave={newVal => handleSave('nickname', newVal)}
+        value={user.nickName||''}
+        onSave={v=>handleSave('nickName',v)}
       />
 
       <EditableField
-        label={labelMap.mobile}
-        type={typeMap.mobile}
-        value={user.phoneNumber || ''}
-        onSave={newVal => handleSave('mobile', newVal)}
+        label="Mobile Number"
+        type="tel"
+        value={user.phoneNumber||''}
+        onSave={v=>handleSave('phoneNumber',v)}
       />
 
       <EditableField
-        label={labelMap.userName}
+        label="User Name"
         type="text"
-        value={user.userName || ''}
-        onSave={newVal => handleSave('userName', newVal)}
+        value={user.userName||''}
+        onSave={v=>handleSave('userName',v)}
       />
 
       <EditableField
-        label={labelMap.location}
+        label="Location"
         type="text"
-        value={user.location || ''}
-        onSave={newVal => handleSave('location', newVal)}
+        value={user.location||''}
+        onSave={v=>handleSave('location',v)}
       />
 
       <EditableField
-        label={labelMap.birthday}
-        type={typeMap.birthday}
-        value={getBirthdayString(user.birthday)}
-        onSave={newVal => handleSave('birthday', newVal)}
+        label="Birthday"
+        type="date"
+        value={formatDate(user.birthday)}
+        onSave={v=>handleSave('birthday',v)}
       />
 
       <div className="text-end mt-4">

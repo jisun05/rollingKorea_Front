@@ -1,56 +1,58 @@
 // src/features/ranking/components/Comments/Comments.jsx
 import React from 'react';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient
-} from '@tanstack/react-query';
-import { Spinner, Alert } from 'react-bootstrap';
+import { useAuth } from '../../../../features/auth/AuthContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Spinner, Alert, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 
-// 댓글 조회 API
-async function fetchComments(rankingId) {
-  const res = await fetch(`/api/rankings/${rankingId}/comments`);
-  if (!res.ok) throw new Error('댓글을 불러올 수 없습니다.');
-  const json = await res.json();
-  return json.comments;
+// ————————————————————————
+// 1) API helper functions
+// ————————————————————————
+const API_BASE = process.env.REACT_APP_API_URL || '';
+
+async function fetchComments() {
+  const res = await fetch(`${API_BASE}/api/comments`);
+  if (!res.ok) throw new Error('댓글 조회에 실패했습니다.');
+  const { content } = await res.json();
+  return content;
 }
 
-// 댓글 작성 API
-async function postComment({ rankingId, text }) {
-  const res = await fetch(`/api/rankings/${rankingId}/comments`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text })
+async function postComment({ userId, content }) {
+  const res = await fetch(
+    `${API_BASE}/api/comments?userId=${userId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
   });
-  if (!res.ok) throw new Error('댓글 작성에 실패했습니다.');
-  return res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => null);
+    throw new Error(err?.message || '댓글 작성에 실패했습니다.');
+  }
+  return res.json(); // { commentId, nickname, content, createdAt, … }
 }
 
-export default function Comments({ rankingId }) {
-  const queryClient = useQueryClient();
+// ————————————————————————
+// 2) Comments 컴포넌트
+// ————————————————————————
+export default function Comments() {
+  const { user, isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
-  // ★ useQuery 객체 시그니처
-  const {
-    data: comments = [],
-    isLoading,
-    error
-  } = useQuery({
-    queryKey: ['comments', rankingId],
-    queryFn: () => fetchComments(rankingId),
-    select: list => [...list].sort(
-      (a, b) => new Date(b.date) - new Date(a.date)
-    ),
-    staleTime: 1000 * 60 * 2,
+  // 1) 댓글 목록 조회 (v5 object signature)
+  const { data: comments = [], isLoading, error } = useQuery({
+    queryKey: ['comments'],
+    queryFn: fetchComments,
+    staleTime: 1000 * 60,   // 1분간 캐시 유지
   });
 
-  // ★ useMutation 객체 시그니처
-  const { mutate: create, isLoading: isPosting } = useMutation({
-    mutationFn: postComment,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['comments', rankingId] });
-    }
+  // 2) 댓글 생성, 성공 시 캐시 무효화 → 재조회
+  const createMut = useMutation({
+    mutationFn: ({ content }) => postComment({ userId: user.userId, content }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['comments'] }),
+    onError: err => alert('댓글 작성 중 오류: ' + err.message)
   });
 
   if (isLoading) return <Spinner animation="border" />;
@@ -58,10 +60,20 @@ export default function Comments({ rankingId }) {
 
   return (
     <div>
-      <CommentForm
-        isLoading={isPosting}
-        onSubmit={text => create({ rankingId, text })}
-      />
+      {isLoggedIn ? (
+        <CommentForm
+          isLoading={createMut.isLoading}
+          onSubmit={content => createMut.mutate({ content })}
+        />
+      ) : (
+        <Alert variant="info">
+          로그인 후 댓글을 남길 수 있습니다.{' '}
+          <Button variant="link" onClick={() => navigate('/')}>
+            로그인
+          </Button>
+        </Alert>
+      )}
+
       <CommentList comments={comments} />
     </div>
   );
