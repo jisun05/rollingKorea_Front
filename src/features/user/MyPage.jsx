@@ -1,6 +1,6 @@
 import { Tab, Nav, Row, Col, Container } from 'react-bootstrap';
 import BasicInfo from './BasicInfo';
-import MyPosts        from './MyPosts';        
+import MyPosts from './MyPosts/MyPosts';      
 import SubmitRequest from './SubmitRequest';
 
 export default function MyPage() {

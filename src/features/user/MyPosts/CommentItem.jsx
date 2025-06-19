@@ -3,11 +3,17 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 
 export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
   const [editing, setEditing] = useState(false);
-  const [input, setInput] = useState(comment.text);
+  const [input, setInput] = useState(comment.content);
 
   const handleSave = () => {
     onUpdate(input);
     setEditing(false);
+  };
+
+  // 날짜 포맷: YYYY-MM-DD
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toISOString().split('T')[0];
   };
 
   return (
@@ -24,6 +30,11 @@ export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
           />
         </Col>
         <Col>
+          {/* 날짜 · 닉네임 표시 */}
+          <div className="text-muted mb-1" style={{ fontSize: '0.85rem' }}>
+            {formatDate(comment.createdAt)} · {comment.nickname}
+          </div>
+
           {editing ? (
             <Form.Control
               as="textarea"
@@ -32,12 +43,11 @@ export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
               onChange={e => setInput(e.target.value)}
             />
           ) : (
-            <p className="mb-1">
-              {comment.isReply && <strong>re)&nbsp;</strong>}
-              {comment.text}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: comment.content }}
+              className="mb-1"
+            />
           )}
-          <small className="text-muted">{comment.date}</small>
         </Col>
         <Col xs="auto">
           {editing ? (

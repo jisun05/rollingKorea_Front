@@ -1,57 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Pagination, Button } from 'react-bootstrap';
+import { Form, Pagination, Button, Spinner, Alert } from 'react-bootstrap';
 import CommentItem from './CommentItem';
 
-export default function CommentList() {
+export default function CommentList({ userId }) {
   const [comments, setComments] = useState([]);
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // 페이지당 아이템 수 정의
   const itemsPerPage = 5;
 
   useEffect(() => {
-    // TODO: 실제 API 호출로 대체
-    setComments([
-      { id: 5, text: 'This is cool!', date: '2025-08-01', isReply: false },
-      { id: 4, text: 'This is cool!', date: '2025-05-01', isReply: false },
-      { id: 3, text: 'This is cool!', date: '2025-03-01', isReply: false },
-      { id: 2, text: 'This is cool!', date: '2025-03-01', isReply: false },
-      { id: 1, text: 'This is your comment.', date: '2025-01-01', isReply: true },
-    ]);
-  }, []);
+    const fetchComments = async () => {
+      try {
+        const res = await fetch(`/api/comments/user?userId=${userId}`);
+        const data = await res.json();
+        setComments(data.content || []);
+      } catch (err) {
+        console.error('댓글 조회 실패', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (userId) fetchComments();
+  }, [userId]);
 
-  // 페이징 계산
   const totalPages = Math.ceil(comments.length / itemsPerPage);
   const paged = comments
     .slice()
-    .sort((a, b) => b.id - a.id)
+    .sort((a, b) => b.commentId - a.commentId)
     .slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  // 선택 토글
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
-  // 전체 선택/해제
-  const allSelected = paged.length > 0 && paged.every(c => selectedIds.includes(c.id));
+  const allSelected = paged.length > 0 && paged.every(c => selectedIds.includes(c.commentId));
   const toggleSelectAll = () => {
     if (allSelected) {
-      setSelectedIds((prev) => prev.filter(id => !paged.some(c => c.id === id)));
+      setSelectedIds((prev) => prev.filter(id => !paged.some(c => c.commentId === id)));
     } else {
-      setSelectedIds((prev) => Array.from(new Set([...prev, ...paged.map(c => c.id)])));
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...paged.map(c => c.commentId)])));
     }
   };
 
-  // 삭제 처리
-  const deleteSelected = () => {
+  const deleteSelected = async () => {
     if (selectedIds.length === 0) return;
-    // TODO: API DELETE 호출
-    setComments(prev => prev.filter(c => !selectedIds.includes(c.id)));
+    await fetch(`/api/comments/admin?adminId=${userId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(selectedIds),
+    });
+    setComments(prev => prev.filter(c => !selectedIds.includes(c.commentId)));
     setSelectedIds([]);
   };
+
+  if (loading) return <Spinner animation="border" />;
+  if (error) return <Alert variant="danger">댓글을 불러오는 데 실패했습니다.</Alert>;
 
   return (
     <>
@@ -67,12 +76,14 @@ export default function CommentList() {
 
       {paged.map(comment => (
         <CommentItem
-          key={comment.id}
+          key={comment.commentId}
           comment={comment}
-          selected={selectedIds.includes(comment.id)}
-          onSelect={() => toggleSelect(comment.id)}
+          selected={selectedIds.includes(comment.commentId)}
+          onSelect={() => toggleSelect(comment.commentId)}
           onUpdate={(newText) =>
-            setComments(prev => prev.map(c => c.id === comment.id ? { ...c, text: newText } : c))
+            setComments(prev => prev.map(c =>
+              c.commentId === comment.commentId ? { ...c, content: newText } : c
+            ))
           }
         />
       ))}
