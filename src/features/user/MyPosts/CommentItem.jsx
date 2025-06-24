@@ -4,13 +4,33 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
   const [editing, setEditing] = useState(false);
   const [input, setInput] = useState(comment.content);
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    onUpdate(input);
-    setEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/comments/${comment.commentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: input }),
+      });
+
+      if (!res.ok) {
+        throw new Error('댓글 수정 실패');
+      }
+
+      onUpdate(input);  // 부모 상태 반영
+      setEditing(false);
+    } catch (err) {
+      console.error('❌ 댓글 수정 실패:', err);
+      alert('댓글 수정에 실패했습니다.');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  // 날짜 포맷: YYYY-MM-DD
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toISOString().split('T')[0];
@@ -30,7 +50,6 @@ export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
           />
         </Col>
         <Col>
-          {/* 날짜 · 닉네임 표시 */}
           <div className="text-muted mb-1" style={{ fontSize: '0.85rem' }}>
             {formatDate(comment.createdAt)} · {comment.nickname}
           </div>
@@ -40,7 +59,7 @@ export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
               as="textarea"
               rows={2}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
             />
           ) : (
             <div
@@ -51,11 +70,20 @@ export default function CommentItem({ comment, selected, onSelect, onUpdate }) {
         </Col>
         <Col xs="auto">
           {editing ? (
-            <Button size="sm" variant="success" onClick={handleSave}>
-              Save
+            <Button
+              size="sm"
+              variant="success"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           ) : (
-            <Button size="sm" variant="outline-secondary" onClick={() => setEditing(true)}>
+            <Button
+              size="sm"
+              variant="outline-secondary"
+              onClick={() => setEditing(true)}
+            >
               Edit
             </Button>
           )}
