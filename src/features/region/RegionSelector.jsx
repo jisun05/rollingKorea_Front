@@ -2,18 +2,19 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 
-// DB의 region 컬럼과 정확히 매칭되는 값으로만 옵션 구성
+// heritage API 상의 areaCode 값 매핑
 const options = [
-  { label: 'Seoul', value: 'Seoul' },
-  { label: 'Gyeonggi', value: 'Gyeonggi' },
-  { label: 'Chungnam', value: 'Chungnam' },
-  { label: 'Chungbuk', value: 'Chungbuk' },
-  { label: 'Jeonbuk', value: 'Jeonbuk' },
-  { label: 'Jeonnam', value: 'Jeonnam' },
-  { label: 'Gyeongnam', value: 'Gyeongnam' },
-  { label: 'Gyeongbuk', value: 'Gyeongbuk' },
-  { label: 'Gangwon', value: 'Gangwon' },
-  { label: 'Jeju', value: 'Jeju' },
+  { label: 'Seoul',     value: 1   },
+  { label: 'Incheon',   value: 2   },
+  { label: 'Gyeonggi',  value: 31  },
+  { label: 'Chungnam',  value: 32  },
+  { label: 'Chungbuk',  value: 33  },
+  { label: 'Jeonbuk',   value: 34  },
+  { label: 'Jeonnam',   value: 35  },
+  { label: 'Gyeongnam', value: 36  },
+  { label: 'Gyeongbuk', value: 37  },
+  { label: 'Gangwon',   value: 38  },
+  { label: 'Jeju',      value: 39  },
 ];
 
 export default function RegionSelector({ value, onChange }) {
@@ -21,7 +22,7 @@ export default function RegionSelector({ value, onChange }) {
     <Form.Select
       size="lg"
       value={value}
-      onChange={e => onChange(e.target.value)}
+      onChange={e => onChange(Number(e.target.value))}
       className="mb-3"
     >
       {options.map(opt => (

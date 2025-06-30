@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
-import { fetchPlacesByRegion } from '../api/placeApi';
+import { fetchPlacesByAreaCode } from './PlaceApi';
 
-export const usePlacesByRegion = (region) => {
+export const usePlacesByRegion = (areaCode) => {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (areaCode == null) {
+      setPlaces([]);
+      setLoading(false);
+      return;
+    }
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await fetchPlacesByRegion(region);
-        setPlaces(data.content); // ⚠️ Spring Data Page 객체의 'content' 사용
+        const data = await fetchPlacesByAreaCode(areaCode);
+        setPlaces(data.content);  // Page.content
       } catch (err) {
         setError(err.message);
       } finally {
@@ -19,7 +26,7 @@ export const usePlacesByRegion = (region) => {
     };
 
     fetchData();
-  }, [region]);
+  }, [areaCode]);
 
   return { places, loading, error };
 };

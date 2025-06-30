@@ -1,33 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/Log';
 import RegionSelector from './RegionSelector';
-import Maps from '../../modules/Maps';
+import { usePlacesByRegion } from './UsePlacesByRegion';
 import PlaceItem from './PlaceItem';
-import { useAuth } from '../auth/AuthContext';
+import Maps from '../../modules/Maps';
+//import { useAuth } from '../auth/AuthContext';
 
 export default function RegionDetailPage() {
-  const { region } = useParams();
+  const { region: paramCode } = useParams();      // URL에서 :region을 paramCode로 받음
+  const areaCode = Number(paramCode);
   const navigate = useNavigate();
+  //const { isLoggedIn } = useAuth();
 
-  const [places, setPlaces] = useState([]);
-  const [selectedRegion, setSelectedRegion] = useState(region);
-  const [mapPos, setMapPos] = useState([37.62591, 126.8981]);
+  const { places, loading, error } = usePlacesByRegion(areaCode);
+
+  const [mapPos, setMapPos]   = useState([37.5665, 126.9780]);
   const [mapName, setMapName] = useState('');
-  const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-   
-    setSelectedRegion(region);
-    apiClient
-      .get(`/api/places?region=${encodeURIComponent(region)}`)
-      .then(res => setPlaces(res.data.content))
-      .catch(console.error);
-  }, [region]);
-
-  const handleRegionChange = newRegion => {
-    setSelectedRegion(newRegion);
-    navigate(`/region/${encodeURIComponent(newRegion)}`);
+  const handleRegionChange = newCode => {
+    navigate(`/region/${newCode}`);
   };
 
   const handlePlaceClick = (lat, lng, name) => {
@@ -35,47 +26,42 @@ export default function RegionDetailPage() {
     setMapName(name);
   };
 
-  const handleLikeClick = (placeId) => {
-    apiClient.post(`/api/like`, { placeId })
-      .then(() => {
-        setPlaces(prev => prev.map(p => p.placeId === placeId ? { ...p, liked: !p.liked } : p));
-      })
-      .catch(err => console.error(err));
+  const handleLikeClick = placeId => {
+    fetch(`/api/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ placeId }),
+    })
+      .then(() => window.location.reload())
+      .catch(console.error);
   };
 
   return (
-    <div className="region-detail">
-      <div className="region-detail__sidebar">
-        <h5>Your Choice</h5>
-        <RegionSelector
-          value={selectedRegion}
-          onChange={handleRegionChange}
-        />
+    <div className="d-flex">
+      <aside className="p-3" style={{ width: '300px' }}>
+        <h5>선택된 지역</h5>
+        <RegionSelector value={areaCode} onChange={handleRegionChange} />
+
+        {loading && <p>로딩 중…</p>}
+        {error   && <p className="text-danger">{error}</p>}
+        {!loading && places.length === 0 && <p>해당 지역의 유적지가 없습니다.</p>}
 
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {places.length === 0 ? (
-            <li>해당 지역의 문화유산 정보가 없습니다.</li>
-          ) : (
-            places.map(place => (
-              <li key={place.placeId}>
-                <PlaceItem
-                  place={place}
-                  onClick={handlePlaceClick}
-                  onLike={handleLikeClick}
-                  isLoggedIn={isLoggedIn}
-                />
-              </li>
-            ))
-          )}
+          {places.map(place => (
+            <li key={place.contentId}>
+              <PlaceItem
+                place={place}
+                onClick={handlePlaceClick}
+                onLikeClick={handleLikeClick}
+              />
+            </li>
+          ))}
         </ul>
-      </div>
+      </aside>
 
-      <div className="region-detail__map">
-        <Maps
-          position={mapPos}
-          placeName={mapName}
-        />
-      </div>
+      <main style={{ flex: 1 }}>
+        <Maps position={mapPos} placeName={mapName} />
+      </main>
     </div>
   );
 }
