@@ -30,17 +30,17 @@ export default function RegionDetailPage() {
 
   const [places, setPlaces]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mapPos, setMapPos]   = useState([37.5665, 126.9780]);
+  const [mapPos, setMapPos]   = useState([37.5665, 126.9780]); // 기본: 서울 시청
   const [mapName, setMapName] = useState('');
 
-  // like 버튼 토글 핸들러
-  const handleLikeClick = (contentId) => {
-    apiClient
-      .post('/api/like', { placeId: contentId })
+  // 좋아요 핸들러
+  const handleLikeClick = contentId => {
+    apiClient.post('/api/like', { placeId: contentId })
       .then(() => {
         setPlaces(prev =>
-          prev.map(p =>
-            p.contentId === contentId ? { ...p, liked: !p.liked } : p
+          prev.map(p => p.contentId === contentId
+            ? { ...p, liked: !p.liked }
+            : p
           )
         );
       })
@@ -49,14 +49,27 @@ export default function RegionDetailPage() {
 
   useEffect(() => {
     setLoading(true);
-    apiClient
-      .get(`/api/places?areaCode=${areaCode}`)
+    apiClient.get(`/api/places?areaCode=${areaCode}`)
       .then(res => {
-        setPlaces(res.data.content || []);
+        const data = res.data.content || [];
+        setPlaces(data);
+
+        if (data.length > 0) {
+          // 첫 번째 장소로 지도 위치 초기화
+          const first = data[0];
+          setMapPos([ first.mapY, first.mapX ]);
+          setMapName(first.title);
+        } else {
+          // 비어 있을 땐 기본값(서울 시청) 유지하거나 비우기
+          setMapPos([37.5665, 126.9780]);
+          setMapName('');
+        }
       })
       .catch(err => {
         console.error('유적지 데이터 fetch 실패', err);
         setPlaces([]);
+        setMapPos([37.5665, 126.9780]);
+        setMapName('');
       })
       .finally(() => setLoading(false));
   }, [areaCode]);
