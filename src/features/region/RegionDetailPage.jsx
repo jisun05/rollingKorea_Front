@@ -6,6 +6,7 @@ import RegionSelector from './RegionSelector';
 import PlaceItem from './PlaceItem';
 import Maps from '../../modules/Maps';
 import apiClient from '../../utils/Log';
+import { useAuth } from '../auth/AuthContext';
 
 const REGION_CODE_MAP = {
   Seoul:     1,
@@ -22,45 +23,56 @@ const REGION_CODE_MAP = {
 };
 
 export default function RegionDetailPage() {
-  const { region } = useParams(); // "Seoul"|"Incheon"|…
+  const { region } = useParams(); // URL 에서 "Seoul"|"Incheon"|… 가져옴
   const navigate = useNavigate();
+  const { isLoggedIn, openLoginModal } = useAuth();
 
   const currentRegion = region || 'Seoul';
-  const areaCode = REGION_CODE_MAP[currentRegion];
+  const areaCode = REGION_CODE_MAP[currentRegion] || 1;
 
   const [places, setPlaces]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [mapPos, setMapPos]   = useState([37.5665, 126.9780]); // 기본: 서울 시청
+  const [mapPos, setMapPos]   = useState([37.5665, 126.9780]); // 기본 서울 시청
   const [mapName, setMapName] = useState('');
 
   // 좋아요 핸들러
   const handleLikeClick = contentId => {
-    apiClient.post('/api/like', { placeId: contentId })
+    if (!isLoggedIn) {
+      // 미로그인 시 로그인 모달 열기
+      openLoginModal();
+      return;
+    }
+
+    apiClient
+      .post('/api/like-places', { contentId })
       .then(() => {
         setPlaces(prev =>
-          prev.map(p => p.contentId === contentId
-            ? { ...p, liked: !p.liked }
-            : p
+          prev.map(p =>
+            p.contentId === contentId
+              ? { ...p, liked: !p.liked }
+              : p
           )
         );
       })
       .catch(console.error);
   };
 
+  // 페이지 로드 또는 지역 변경 시 데이터 패치
   useEffect(() => {
     setLoading(true);
-    apiClient.get(`/api/places?areaCode=${areaCode}`)
+    apiClient
+      .get(`/api/places?areaCode=${areaCode}`)
       .then(res => {
         const data = res.data.content || [];
         setPlaces(data);
 
         if (data.length > 0) {
-          // 첫 번째 장소로 지도 위치 초기화
+          // 첫 번째 장소를 지도에 자동 포커스
           const first = data[0];
           setMapPos([ first.mapY, first.mapX ]);
           setMapName(first.title);
         } else {
-          // 비어 있을 땐 기본값(서울 시청) 유지하거나 비우기
+          // 데이터 없으면 기본값 유지
           setMapPos([37.5665, 126.9780]);
           setMapName('');
         }
@@ -83,7 +95,7 @@ export default function RegionDetailPage() {
       <aside style={{ width: 300, padding: 16 }}>
         <h5>Your Choice</h5>
         <RegionSelector
-          value={currentRegion}           // 문자열
+          value={currentRegion}           // 문자열로 현재 지역 표시
           onChange={handleRegionChange}   // 문자열 콜백
         />
 

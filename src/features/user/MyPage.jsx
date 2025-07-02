@@ -1,12 +1,13 @@
 import { Tab, Nav, Row, Col, Container } from 'react-bootstrap';
 import BasicInfo from './BasicInfo';
+import MySave from './MySave';
 //import MyPosts from './MyPosts/MyPosts';      
 //import SubmitRequest from './SubmitRequest';
 
 export default function MyPage() {
   const tabs = [
     { eventKey: 'basic', title: 'Basic Info', Component: BasicInfo },
-    { eventKey: 'save',  title: 'My Save',     Component: () => <p>준비 중입니다…</p> },
+    { eventKey: 'save',  title: 'My Save',    Component: MySave },
     //{ eventKey: 'posts', title: 'My Posts',     Component: MyPosts },
     //{ eventKey: 'req', title: 'Submit a Request', Component: SubmitRequest },
     
